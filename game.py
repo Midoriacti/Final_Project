@@ -193,25 +193,33 @@ while running: #while the game is running
     for event in pygame.event.get(): #get an event
         #This block checkes for if the mouse is clicked thus we can click and drag
         if event.type == pygame.MOUSEBUTTONDOWN: #in the event of a button press
-            if play_button.check_input(mouse_pos): #if play button is pressed
-                fade_done = False
-                pygame.time.delay(1000)
-                fade_out(screen, 1250, 800)
-                game_state = "Play"
-                Main_theme.stop()
-            if Options_button.check_input(mouse_pos): #if options button is pressed
-                pygame.time.delay(1000)
-                fade_out(screen, 1250, 800)
-                fade_done = False
-                game_state = "Options"
-                Main_theme.stop()
-            if Quit_button.check_input(mouse_pos): #if quit button is pressed
-                running = False
-            if back_button.check_input(mouse_pos): #if back button is pressed
-                pygame.time.delay(1000)
-                fade_out(screen, 1250, 800)
-                fade_done = False
-                game_state = "Menu"
+            if game_state == "Menu":
+                if play_button.check_input(mouse_pos): #if play button is pressed
+                    fade_done = False
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    game_state = "Play"
+                    Main_theme.stop()
+                if Options_button.check_input(mouse_pos): #if options button is pressed
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    fade_done = False
+                    game_state = "Options"
+                    Main_theme.stop()
+                if Quit_button.check_input(mouse_pos): #if quit button is pressed
+                    running = False
+            elif game_state == "Play":
+                if back_button.check_input(mouse_pos): #if back button is pressed
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    fade_done = False
+                    game_state = "Menu"
+            elif game_state == "Options":
+                if back_button.check_input(mouse_pos): #if back button is pressed
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    fade_done = False
+                    game_state = "Menu"
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release
             Clicked = False
         if event.type == pygame.QUIT: #in the event of quit
