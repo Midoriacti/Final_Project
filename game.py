@@ -114,11 +114,11 @@ def Option_fade_in(screen, Option_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
         pygame.time.delay(15)
 
 def fade_out(screen, SCREEN_WIDTH, SCREEN_HEIGHT):
-    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-    fade.fill((0,0,0))
-    for alpha in range (0, 255, 3): #aplha = opacity thus when alpha is used the opacity is altered
+    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) #set the fade to cover the entire screen
+    fade.fill((0,0,0)) #fill fade with black 
+    for alpha in range (0, 255, 3): #transition into back (starts at 0 and moves to 255(black) +3 every frame)
         fade.set_alpha(alpha)
-        screen.blit(fade, (0,0))
+        screen.blit(fade, (0,0)) #
         pygame.display.update()
         pygame.time.delay(15)
 
@@ -142,19 +142,20 @@ while running: #while the game is running
         Menu_img = pygame.image.load("Assets/Potato_Menu.png").convert() #load background image
         Menu_scale = pygame.transform.scale(Menu_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scale the image to screen size
         if not fade_done: #if statement to control fade out if not used fade out loops
-            Main_theme.play()
+            Main_theme.play(-1) #plays audio and the -1 loops it
             Menu_fade_in(screen, Menu_scale, 1250, 800) #call the menu fade in function
             fade_done = True #set fade done to true to stop the looping
-        screen.blit(Menu_scale, (0,0)) 
-        screen.blit(title_text, title_rect)
-        mouse_pos = pygame.mouse.get_pos()
-        play_button.change_color(mouse_pos)
+        screen.blit(Menu_scale, (0,0)) #places the background
+        screen.blit(title_text, title_rect) #places the title text
+        mouse_pos = pygame.mouse.get_pos() #constantly checks for the position of the mouse
+        #these look for the mouse position if it goes on or off a button the color will update from base to hover or vise versa
+        play_button.change_color(mouse_pos) 
         play_button.update(screen)
         Options_button.change_color(mouse_pos)
         Options_button.update(screen)
         Quit_button.change_color(mouse_pos)
-        Quit_button.update(screen)
-        pygame.display.flip()
+        Quit_button.update(screen) 
+        pygame.display.flip() #updates display (must be careful each time you do this stuff can get hidden behind it)
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
         pygame.display.flip() #update display
@@ -220,9 +221,9 @@ while running: #while the game is running
                     fade_out(screen, 1250, 800)
                     fade_done = False
                     game_state = "Menu"
-        if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release
-            Clicked = False
+        if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
+            Clicked = False 
         if event.type == pygame.QUIT: #in the event of quit
-            running = False
+            running = False #stop the while loop
 
-pygame.quit()
+pygame.quit() #close the game
