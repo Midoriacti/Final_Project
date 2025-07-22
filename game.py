@@ -10,6 +10,7 @@ running = True #runs the game
 playing = False #dictates when the player is actively playing (for later use)
 Clicked = False #boolean to check if mouse button clicked (for later use)
 fade_done = False #makes it so the menu's fade in does not loop
+fullscreen = False # boolean for fullscreen/windowed button
 
 #screen sizing
 SCREEN_WIDTH = 1250 
@@ -70,6 +71,16 @@ back_button = Button(
     font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60),
     baseColor = "black",
     hoverColor = "white"
+)
+
+fullscreen_button = Button(
+    image = scaled_button, #potato peel button
+    x_pos = 640, # x-coordinants on screen
+    y_pos = 360, # y-coordinants on screen
+    text_in = "Fullscreen", #text to display
+    font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60), #giving it the custom font
+    baseColor = "black", #sets the color (can only choose basic colors)
+    hoverColor = "white" #sets the color when hovered over
 )
 #buttons end 
 
@@ -203,6 +214,8 @@ while running: #while the game is running
         mouse_pos = pygame.mouse.get_pos()
         back_button.change_color(mouse_pos)
         back_button.update(screen)
+        fullscreen_button.change_color(mouse_pos)
+        fullscreen_button.update(screen)
         pygame.display.flip()
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
@@ -241,6 +254,16 @@ while running: #while the game is running
                     fade_out(screen, 1250, 800)
                     fade_done = False
                     game_state = "Menu"
+                if fullscreen_button.check_input(mouse_pos): #if back button is pressed
+                    pygame.time.delay(1000)
+                    pygame.display.toggle_fullscreen()
+                    if fullscreen == False:
+                        fullscreen_button.text_change("Windowed") # text change upon clicking
+                        fullscreen = True
+                    elif fullscreen == True:
+                        fullscreen_button.text_change("Fullscreen") # text change upon clicking
+                        fullscreen = False
+                    pygame.display.update()
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
             Clicked = False 
         if event.type == pygame.QUIT: #in the event of quit

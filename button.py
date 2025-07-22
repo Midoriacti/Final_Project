@@ -23,3 +23,6 @@ class Button():
             self.text = self.font.render(self.text_in, True, self.hoverColor)
         else:
             self.text = self.font.render(self.text_in, True, self.baseColor)
+    def text_change(self, new_text): # changes the text when needed
+     self.text_in = new_text
+     self.text = self.font.render(self.text_in, True, self.baseColor)
