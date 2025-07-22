@@ -1,4 +1,5 @@
 import pygame #import pygame
+import random #import random for chance variables
 from button import Button #import button class from button.py (can be used for all buttons)
 from cursor import Cursor #imports cursor class from cursor.py
 
@@ -142,7 +143,7 @@ while running: #while the game is running
         Menu_img = pygame.image.load("Assets/Potato_Menu.png").convert() #load background image
         Menu_scale = pygame.transform.scale(Menu_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scale the image to screen size
         if not fade_done: #if statement to control fade out if not used fade out loops
-            Main_theme.play(-1) #plays audio and the -1 loops it
+            Main_theme.play(-1).set_volume(0.5) #plays audio and the -1 loops it, lowers volume
             Menu_fade_in(screen, Menu_scale, 1250, 800) #call the menu fade in function
             fade_done = True #set fade done to true to stop the looping
         screen.blit(Menu_scale, (0,0)) #places the background
@@ -162,6 +163,7 @@ while running: #while the game is running
 
     #now in play game state
     if game_state == "Play":
+        #start_time = pygame.time.get_ticks() #starts recording time 
         Game_img = pygame.image.load("Assets/Game_Background.png").convert()
         Game_scale = pygame.transform.scale(Game_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
         if not fade_done:
@@ -172,9 +174,24 @@ while running: #while the game is running
         back_button.change_color(mouse_pos)
         back_button.update(screen)
         pygame.display.flip()
+
+        #timer section starts here (currently doesn't work if anyone wants to fix it)
+        #time_limit = 100000 #this is in milliseconds 
+        #current_time = pygame.time.get_ticks() #records for current time
+        #count_down = max(0, time_limit - (current_time - start_time)) #prevents going past 0 when counting down
+        #seconds = count_down // 1000 #makes it in seconds
+        #timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
+        #timer_text = title_font.render(f'Time left: {seconds}', True, "white") #rendering the timer
+        #screen.blit(timer_text, (SCREEN_WIDTH - 700, 15))
+
+        #cursor stuff leave this last or else cursor will not appear
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
         pygame.display.flip() #update display
+
+        if seconds == 0:
+            game_state == "Game Over"
+            fade_done = False
 
     if game_state == "Options":
         Option_img = pygame.image.load("Assets/Options_Background.png").convert()
@@ -190,6 +207,9 @@ while running: #while the game is running
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
         pygame.display.flip() #update display
+
+    #if game_state == "Horror":
+
 
     for event in pygame.event.get(): #get an event
         #This block checkes for if the mouse is clicked thus we can click and drag
