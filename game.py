@@ -2,6 +2,7 @@ import pygame #import pygame
 import random #import random for chance variables
 from button import Button #import button class from button.py (can be used for all buttons)
 from cursor import Cursor #imports cursor class from cursor.py
+from potato import Potato #imports potato class from potato.py (uses buttons to make potatoes)
 
 pygame.init() #initialize pygame
 
@@ -18,7 +19,7 @@ SCREEN_HEIGHT = 800
 
 #sizing adjustments for screen, title, and buttons
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
-game_state = "Splash" #initializes game state to Splash for the game start
+game_state = "Play" #initializes game state to Splash for the game start
 
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
@@ -212,6 +213,10 @@ def play_state():
     timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
     screen.blit(timer_num, (SCREEN_WIDTH - 350, 18))
     #pygame.display.flip() #update display NOT NEEDED
+
+    #visible potato!
+    spud = Potato(500,300,)
+    spud.show(screen)
 
     #cursor stuff leave this last or else cursor will not appear
     Custum_Cursor.update() #update the cursor location
