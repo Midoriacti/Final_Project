@@ -142,98 +142,130 @@ def fade_out(screen, SCREEN_WIDTH, SCREEN_HEIGHT):
         pygame.display.update()
         pygame.time.delay(15)
 
+
+def splash_state():
+    global game_state
+    
+    Splash_img = pygame.image.load("Assets/Spuds_N_Buds.png").convert() #loads the image
+    Splash_scale = pygame.transform.scale(Splash_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scales the image to fit screen size
+    Splash_fade_in(screen, Splash_scale, 1250, 800) #calls fade in function and controls speed (each new background needs their own due to the image being needed for the fade in)
+    screen.blit(Splash_scale, (0,0)) #displays image
+    pygame.display.flip() #refreshes the screen
+    pygame.time.delay(1500) #delay before fade out
+    fade_out(screen, 1250, 800) #calls fade out (can be used for all transitions)
+    game_state = "Menu" #set the game state to menu to continue on
+
+
+def menu_state():
+    global fade_done
+    global mouse_pos
+    
+    Menu_img = pygame.image.load("Assets/Potato_Menu.png").convert() #load background image
+    Menu_scale = pygame.transform.scale(Menu_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scale the image to screen size
+    if not fade_done: #if statement to control fade out if not used fade out loops
+        Main_theme.play(-1).set_volume(0.5) #plays audio and the -1 loops it, lowers volume
+        Menu_fade_in(screen, Menu_scale, 1250, 800) #call the menu fade in function
+        fade_done = True #set fade done to true to stop the looping
+    screen.blit(Menu_scale, (0,0)) #places the background
+    screen.blit(title_text, title_rect) #places the title text
+    mouse_pos = pygame.mouse.get_pos() #constantly checks for the position of the mouse
+    #these look for the mouse position if it goes on or off a button the color will update from base to hover or vise versa
+    play_button.change_color(mouse_pos) 
+    play_button.update(screen)
+    Options_button.change_color(mouse_pos)
+    Options_button.update(screen)
+    Quit_button.change_color(mouse_pos)
+    Quit_button.update(screen) 
+    #pygame.display.flip() #updates display (must be careful each time you do this stuff can get hidden behind it)
+    Custum_Cursor.update() #update the cursor location
+    Custum_Cursor.draw() #draw the cursor
+    pygame.display.flip() #update display
+
+
+def play_state():
+    global time_limit
+    global timer_reset
+    global mouse_pos
+    global fade_done
+
+    if not timer_reset:
+        time_limit = MAX_TIMER #this is in milliseconds
+        timer_reset = True
+    Game_img = pygame.image.load("Assets/Game_Background.png").convert()
+    Game_scale = pygame.transform.scale(Game_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    if not fade_done:
+        Game_fade_in(screen, Game_scale, 1250, 800)
+        fade_done = True
+    screen.blit(Game_scale, (0,0))
+    mouse_pos = pygame.mouse.get_pos()
+    back_button.change_color(mouse_pos)
+    back_button.update(screen)
+    #pygame.display.flip() #NOT NEEDED
+
+    #timer section starts here (currently doesn't work if anyone wants to fix it)
+    #start_time = pygame.time.get_ticks() #starts recording time
+    time_limit -= 25 # counts down 25 is basically a second...for some reason
+    seconds = time_limit // 1000 #makes it in seconds
+    timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
+    timer_text = title_font.render(f'Time left: ', True, "white") #rendering the timer
+    screen.blit(timer_text, (SCREEN_WIDTH - 700, 15))
+    timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
+    screen.blit(timer_num, (SCREEN_WIDTH - 350, 18))
+    #pygame.display.flip() #update display NOT NEEDED
+
+    #cursor stuff leave this last or else cursor will not appear
+    Custum_Cursor.update() #update the cursor location
+    Custum_Cursor.draw() #draw the cursor
+    pygame.display.flip() #update display
+
+    if time_limit <= 0:
+        game_state == "Game Over"
+        timer_reset = False
+
+
+def options_state():
+    global mouse_pos
+    global fade_done
+    
+    Option_img = pygame.image.load("Assets/Options_Background.png").convert()
+    Option_scale = pygame.transform.scale(Option_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    if not fade_done:
+        Option_fade_in(screen, Option_scale, 1250, 800)
+        fade_done = True
+    screen.blit(Option_scale, (0,0))
+    mouse_pos = pygame.mouse.get_pos()
+    back_button.change_color(mouse_pos)
+    back_button.update(screen)
+    fullscreen_button.change_color(mouse_pos)
+    fullscreen_button.update(screen)
+    #pygame.display.flip()
+    Custum_Cursor.update() #update the cursor location
+    Custum_Cursor.draw() #draw the cursor
+    pygame.display.flip() #update display
+
+
+def game_over_state():
+    pass
+
+
 #game code
 while running: #while the game is running
     pygame.mouse.set_visible(False) #make normal cursor invisible
 
-    #starting game state
-    if game_state == "Splash": #Game state starts in splash then moves through states depending on buttons pressed
-        Splash_img = pygame.image.load("Assets/Spuds_N_Buds.png").convert() #loads the image
-        Splash_scale = pygame.transform.scale(Splash_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scales the image to fit screen size
-        Splash_fade_in(screen, Splash_scale, 1250, 800) #calls fade in function and controls speed (each new background needs their own due to the image being needed for the fade in)
-        screen.blit(Splash_scale, (0,0)) #displays image
-        pygame.display.flip() #refreshes the screen
-        pygame.time.delay(1500) #delay before fade out
-        fade_out(screen, 1250, 800) #calls fade out (can be used for all transitions)
-        game_state = "Menu" #set the game state to menu to continue on
 
-    #now in menu game state
-    if game_state == "Menu": 
-        Menu_img = pygame.image.load("Assets/Potato_Menu.png").convert() #load background image
-        Menu_scale = pygame.transform.scale(Menu_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scale the image to screen size
-        if not fade_done: #if statement to control fade out if not used fade out loops
-            Main_theme.play(-1).set_volume(0.5) #plays audio and the -1 loops it, lowers volume
-            Menu_fade_in(screen, Menu_scale, 1250, 800) #call the menu fade in function
-            fade_done = True #set fade done to true to stop the looping
-        screen.blit(Menu_scale, (0,0)) #places the background
-        screen.blit(title_text, title_rect) #places the title text
-        mouse_pos = pygame.mouse.get_pos() #constantly checks for the position of the mouse
-        #these look for the mouse position if it goes on or off a button the color will update from base to hover or vise versa
-        play_button.change_color(mouse_pos) 
-        play_button.update(screen)
-        Options_button.change_color(mouse_pos)
-        Options_button.update(screen)
-        Quit_button.change_color(mouse_pos)
-        Quit_button.update(screen) 
-        #pygame.display.flip() #updates display (must be careful each time you do this stuff can get hidden behind it)
-        Custum_Cursor.update() #update the cursor location
-        Custum_Cursor.draw() #draw the cursor
-        pygame.display.flip() #update display
-
-    #now in play game state
-    if game_state == "Play": 
-        if not timer_reset:
-            time_limit = MAX_TIMER #this is in milliseconds
-            timer_reset = True
-        Game_img = pygame.image.load("Assets/Game_Background.png").convert()
-        Game_scale = pygame.transform.scale(Game_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-        if not fade_done:
-            Game_fade_in(screen, Game_scale, 1250, 800)
-            fade_done = True
-        screen.blit(Game_scale, (0,0))
-        mouse_pos = pygame.mouse.get_pos()
-        back_button.change_color(mouse_pos)
-        back_button.update(screen)
-        #pygame.display.flip() #NOT NEEDED
-
-        #timer section starts here (currently doesn't work if anyone wants to fix it)
-        #start_time = pygame.time.get_ticks() #starts recording time
-        time_limit -= 25 # counts down 25 is basically a second...for some reason
-        seconds = time_limit // 1000 #makes it in seconds
-        timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
-        timer_text = title_font.render(f'Time left: ', True, "white") #rendering the timer
-        screen.blit(timer_text, (SCREEN_WIDTH - 700, 15))
-        timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
-        screen.blit(timer_num, (SCREEN_WIDTH - 350, 18))
-        #pygame.display.flip() #update display NOT NEEDED
-
-        #cursor stuff leave this last or else cursor will not appear
-        Custum_Cursor.update() #update the cursor location
-        Custum_Cursor.draw() #draw the cursor
-        pygame.display.flip() #update display
-
-        if time_limit <= 0:
-            game_state == "Game Over"
-            timer_reset = False
-
-    if game_state == "Options":
-        Option_img = pygame.image.load("Assets/Options_Background.png").convert()
-        Option_scale = pygame.transform.scale(Option_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-        if not fade_done:
-            Option_fade_in(screen, Option_scale, 1250, 800)
-            fade_done = True
-        screen.blit(Option_scale, (0,0))
-        mouse_pos = pygame.mouse.get_pos()
-        back_button.change_color(mouse_pos)
-        back_button.update(screen)
-        fullscreen_button.change_color(mouse_pos)
-        fullscreen_button.update(screen)
-        #pygame.display.flip()
-        Custum_Cursor.update() #update the cursor location
-        Custum_Cursor.draw() #draw the cursor
-        pygame.display.flip() #update display
-
-    #if game_state == "Horror":
+    match game_state:
+        case "Splash":
+            splash_state()
+        case "Menu":
+            menu_state()
+        case "Options":
+            options_state()
+        case "Play":
+            play_state()
+        case "Game Over":
+            game_over_state()
+        case "Horror":
+            pass
 
 
     for event in pygame.event.get(): #get an event
