@@ -31,6 +31,14 @@ small_scaled_button = pygame.transform.scale(raw_button, (250, 130)) #make small
 Main_theme = pygame.mixer.Sound("Assets/Main_theme.mp3") #main music
 Custum_Cursor = Cursor()
 
+
+#Gameplay loop variables
+#clock = pygame.time.Clock() #for changing internal clock
+#FPS = 30
+MAX_TIMER = 10000
+time_limit = MAX_TIMER #this is in milliseconds
+timer_reset = True
+
 #buttons start
 play_button = Button(
     image = scaled_button, #potato peel button
@@ -156,14 +164,16 @@ while running: #while the game is running
         Options_button.update(screen)
         Quit_button.change_color(mouse_pos)
         Quit_button.update(screen) 
-        pygame.display.flip() #updates display (must be careful each time you do this stuff can get hidden behind it)
+        #pygame.display.flip() #updates display (must be careful each time you do this stuff can get hidden behind it)
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
         pygame.display.flip() #update display
 
     #now in play game state
-    if game_state == "Play":
-        #start_time = pygame.time.get_ticks() #starts recording time 
+    if game_state == "Play": 
+        if not timer_reset:
+            time_limit = MAX_TIMER #this is in milliseconds
+            timer_reset = True
         Game_img = pygame.image.load("Assets/Game_Background.png").convert()
         Game_scale = pygame.transform.scale(Game_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
         if not fade_done:
@@ -173,25 +183,27 @@ while running: #while the game is running
         mouse_pos = pygame.mouse.get_pos()
         back_button.change_color(mouse_pos)
         back_button.update(screen)
-        pygame.display.flip()
+        #pygame.display.flip() #NOT NEEDED
 
         #timer section starts here (currently doesn't work if anyone wants to fix it)
-        #time_limit = 100000 #this is in milliseconds 
-        #current_time = pygame.time.get_ticks() #records for current time
-        #count_down = max(0, time_limit - (current_time - start_time)) #prevents going past 0 when counting down
-        #seconds = count_down // 1000 #makes it in seconds
-        #timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
-        #timer_text = title_font.render(f'Time left: {seconds}', True, "white") #rendering the timer
-        #screen.blit(timer_text, (SCREEN_WIDTH - 700, 15))
+        #start_time = pygame.time.get_ticks() #starts recording time
+        time_limit -= 25 # counts down 25 is basically a second...for some reason
+        seconds = time_limit // 1000 #makes it in seconds
+        timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
+        timer_text = title_font.render(f'Time left: ', True, "white") #rendering the timer
+        screen.blit(timer_text, (SCREEN_WIDTH - 700, 15))
+        timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
+        screen.blit(timer_num, (SCREEN_WIDTH - 350, 18))
+        #pygame.display.flip() #update display NOT NEEDED
 
         #cursor stuff leave this last or else cursor will not appear
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
         pygame.display.flip() #update display
 
-        if seconds == 0:
+        if time_limit <= 0:
             game_state == "Game Over"
-            fade_done = False
+            timer_reset = False
 
     if game_state == "Options":
         Option_img = pygame.image.load("Assets/Options_Background.png").convert()
@@ -203,7 +215,7 @@ while running: #while the game is running
         mouse_pos = pygame.mouse.get_pos()
         back_button.change_color(mouse_pos)
         back_button.update(screen)
-        pygame.display.flip()
+        #pygame.display.flip()
         Custum_Cursor.update() #update the cursor location
         Custum_Cursor.draw() #draw the cursor
         pygame.display.flip() #update display
@@ -245,5 +257,7 @@ while running: #while the game is running
             Clicked = False 
         if event.type == pygame.QUIT: #in the event of quit
             running = False #stop the while loop
+    
+    #clock.tick(FPS) #if we start changing the speed
 
 pygame.quit() #close the game
