@@ -14,14 +14,18 @@ class Potato():
         
         self.peel_color = (246,207,73,255)
         self.potato_grid = []
-        self.p_size = 30
+        self.p_size = 15
         p_size = self.p_size
+        tot = 0
         
         #layer0 - 80 from left 0 from top 6 spaces total
         new_x = self.potato_x + self.p_size * 8
         new_y = self.potato_y + self.p_size * 0
         for i in range(6):
             self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+            self.potato_grid[tot].locked = True
+            tot += 1
+        
             
             
         #layer1
@@ -30,8 +34,10 @@ class Potato():
         for i in range(13):
             if i == 0 or i == 1 or i == 2 or i == 3 or i == 4 or i == 11 or i == 12:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer2
@@ -40,8 +46,10 @@ class Potato():
         for i in range(16):
             if i == 0 or i == 14 or i == 15:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer3
@@ -50,8 +58,10 @@ class Potato():
         for i in range(18):
             if i == 0 or i == 17:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer4
@@ -60,8 +70,10 @@ class Potato():
         for i in range(20):
             if i == 0 or i == 19:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer5
@@ -70,8 +82,10 @@ class Potato():
         for i in range(20):
             if i == 0 or i == 19:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer6
@@ -80,8 +94,10 @@ class Potato():
         for i in range(20):
             if i == 0 or i == 19:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer7
@@ -90,8 +106,10 @@ class Potato():
         for i in range(20):
             if i == 0 or i == 19:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer8
@@ -100,8 +118,10 @@ class Potato():
         for i in range(19):
             if i == 0 or i == 18:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer9
@@ -110,8 +130,10 @@ class Potato():
         for i in range(18):
             if i == 0 or i == 17:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer10
@@ -120,8 +142,10 @@ class Potato():
         for i in range(17):
             if i == 0 or i == 16:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer11
@@ -130,8 +154,10 @@ class Potato():
         for i in range(15):
             if i == 0 or i == 1 or i == 2 or i == 11 or i == 12 or i == 13 or i == 14:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+                self.potato_grid[tot].locked = True
             else:
                 self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.base_color))
+            tot += 1
                 
                 
         #layer12 - 80 from left 0 from top 6 spaces total
@@ -139,22 +165,27 @@ class Potato():
         new_y = self.potato_y + self.p_size * 12
         for i in range(8):
             self.potato_grid.append(Pixel(new_x + p_size * i, new_y, self.border_color))
+            self.potato_grid[tot].locked = True
+            tot += 1
 
         
     def show(self,screen):
         for i in range(len(self.potato_grid)):
             self.potato_grid[i].draw(screen)
     
-    def new():
+    def new(self):
         #creates a new potato
         pass
     
-    def delete():
+    def delete(self):
         #Deletes a potato
         pass
     
-    def peel(mouse_pos):
+    def peel(self,mouse_pos):
         #peels a potato with the cursor
             #Takes mouse_pos and calls check_input() on all buttons
+        for i in range(len(self.potato_grid)):
+            if self.potato_grid[i].check_input(mouse_pos) and self.potato_grid[i].locked == False:
+                self.potato_grid[i].change_color(self.peel_color)
                 #If over a button call change_color()
         pass

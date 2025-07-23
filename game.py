@@ -19,7 +19,7 @@ SCREEN_HEIGHT = 800
 
 #sizing adjustments for screen, title, and buttons
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
-game_state = "Play" #initializes game state to Splash for the game start
+game_state = "Splash" #initializes game state to Splash for the game start
 
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
@@ -40,6 +40,7 @@ Custum_Cursor = Cursor()
 MAX_TIMER = 10000
 time_limit = MAX_TIMER #this is in milliseconds
 timer_reset = True
+spud = Potato(500,270)
 
 #buttons start
 play_button = Button(
@@ -183,7 +184,8 @@ def menu_state():
     pygame.display.flip() #update display
 
 
-def play_state():
+def play_state(spud):
+    global game_state
     global time_limit
     global timer_reset
     global mouse_pos
@@ -215,7 +217,6 @@ def play_state():
     #pygame.display.flip() #update display NOT NEEDED
 
     #visible potato!
-    spud = Potato(500,300,)
     spud.show(screen)
 
     #cursor stuff leave this last or else cursor will not appear
@@ -224,8 +225,8 @@ def play_state():
     pygame.display.flip() #update display
 
     if time_limit <= 0:
-        game_state == "Game Over"
         timer_reset = False
+        game_state = "Menu"
 
 
 def options_state():
@@ -266,7 +267,7 @@ while running: #while the game is running
         case "Options":
             options_state()
         case "Play":
-            play_state()
+            play_state(spud)
         case "Game Over":
             game_over_state()
         case "Horror":
@@ -276,6 +277,7 @@ while running: #while the game is running
     for event in pygame.event.get(): #get an event
         #This block checkes for if the mouse is clicked thus we can click and drag
         if event.type == pygame.MOUSEBUTTONDOWN: #in the event of a button press
+            Clicked = True
             if game_state == "Menu":
                 if play_button.check_input(mouse_pos): #if play button is pressed
                     fade_done = False
@@ -297,6 +299,7 @@ while running: #while the game is running
                     fade_out(screen, 1250, 800)
                     fade_done = False
                     game_state = "Menu"
+                spud.peel(mouse_pos)
             elif game_state == "Options":
                 if back_button.check_input(mouse_pos): #if back button is pressed
                     pygame.time.delay(1000)
@@ -315,6 +318,11 @@ while running: #while the game is running
                     pygame.display.update()
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
             Clicked = False 
+        
+        if event.type == pygame.MOUSEMOTION:  # <-- NEW BLOCK: handle dragging
+            if Clicked and game_state == "Play":
+                spud.peel(mouse_pos)
+        
         if event.type == pygame.QUIT: #in the event of quit
             running = False #stop the while loop
     
