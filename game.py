@@ -12,6 +12,7 @@ playing = False #dictates when the player is actively playing (for later use)
 Clicked = False #boolean to check if mouse button clicked (for later use)
 fade_done = False #makes it so the menu's fade in does not loop
 fullscreen = False # boolean for fullscreen/windowed button
+Horror = False
 
 #screen sizing
 SCREEN_WIDTH = 1250 
@@ -19,7 +20,7 @@ SCREEN_HEIGHT = 800
 
 #sizing adjustments for screen, title, and buttons
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
-game_state = "Splash" #initializes game state to Splash for the game start
+game_state = "Play" #initializes game state to Splash for the game start
 
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
@@ -37,10 +38,16 @@ Custum_Cursor = Cursor()
 #Gameplay loop variables
 #clock = pygame.time.Clock() #for changing internal clock
 #FPS = 30
-MAX_TIMER = 10000
+MAX_TIMER = 100000
 time_limit = MAX_TIMER #this is in milliseconds
 timer_reset = True
+peeling = False
+peeled = False
+spud_count = 0
 spud = Potato(500,270)
+
+#Horror
+horror_shade = (255, 0, 0, 90) #red
 
 #buttons start
 play_button = Button(
@@ -143,8 +150,59 @@ def fade_out(screen, SCREEN_WIDTH, SCREEN_HEIGHT):
         screen.blit(fade, (0,0)) #
         pygame.display.update()
         pygame.time.delay(15)
+        
+#------------------HORROR FADES------------------
 
+def Horror_Splash_fade_in(screen, Splash_scale, SCREEN_WIDTH, SCREEN_HEIGHT): #each fade in needs its own separate fade as the image is needed to fade in properly
+    Horror_fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) #set fade equal to screen size
+    Horror_fade.fill(horror_shade)  # Red
+    for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered (start at black and lighten to the image)
+        screen.blit(Splash_scale, (0,0)) #draws the splash in the top left
+        Horror_fade.set_alpha(alpha) #set the 
+        screen.blit(Horror_fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(15)
 
+def Horror_Menu_fade_in(screen, Menu_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
+    Horror_fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    Horror_fade.fill(horror_shade)  # Red
+    for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
+        screen.blit(Menu_scale, (0,0))
+        Horror_fade.set_alpha(alpha)
+        screen.blit(Horror_fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(15)
+
+def Horror_Game_fade_in(screen, Game_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
+    Horror_fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    Horror_fade.fill(horror_shade)  # Red
+    for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
+        screen.blit(Game_scale, (0,0))
+        Horror_fade.set_alpha(alpha)
+        screen.blit(Horror_fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(15)
+
+def Horror_Option_fade_in(screen, Option_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
+    Horror_fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    Horror_fade.fill(horror_shade)  # Red
+    for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
+        screen.blit(Option_scale, (0,0))
+        Horror_fade.set_alpha(alpha)
+        screen.blit(Horror_fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(15)
+
+def Horror_fade_out(screen, SCREEN_WIDTH, SCREEN_HEIGHT):
+    Horror_fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) #set the fade to cover the entire screen
+    Horror_fade.fill(horror_shade)  # Red
+    for alpha in range (0, 255, 3): #transition into back (starts at 0 and moves to 255(black) +3 every frame)
+        Horror_fade.set_alpha(alpha)
+        screen.blit(Horror_fade, (0,0)) #
+        pygame.display.update()
+        pygame.time.delay(15)
+        
+        
 def splash_state():
     global game_state
     
@@ -152,6 +210,12 @@ def splash_state():
     Splash_scale = pygame.transform.scale(Splash_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scales the image to fit screen size
     Splash_fade_in(screen, Splash_scale, 1250, 800) #calls fade in function and controls speed (each new background needs their own due to the image being needed for the fade in)
     screen.blit(Splash_scale, (0,0)) #displays image
+    
+    if Horror:
+        Horror_overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        Horror_overlay.fill(horror_shade)  # Red
+        screen.blit(Horror_overlay, (0, 0))
+    
     pygame.display.flip() #refreshes the screen
     pygame.time.delay(1500) #delay before fade out
     fade_out(screen, 1250, 800) #calls fade out (can be used for all transitions)
@@ -181,6 +245,11 @@ def menu_state():
     #pygame.display.flip() #updates display (must be careful each time you do this stuff can get hidden behind it)
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
+    
+    if Horror:
+        Horror_overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        Horror_overlay.fill(horror_shade)  # Red with 50% opacity
+        screen.blit(Horror_overlay, (0, 0))
     pygame.display.flip() #update display
 
 
@@ -190,7 +259,17 @@ def play_state(spud):
     global timer_reset
     global mouse_pos
     global fade_done
+    global spud_count
+    global peeling
 
+    if not peeling:
+        spud.new()
+        peeling = True
+            
+    if spud.mouskatool():
+        spud_count += 1
+        peeling = False
+    
     if not timer_reset:
         time_limit = MAX_TIMER #this is in milliseconds
         timer_reset = True
@@ -211,9 +290,12 @@ def play_state(spud):
     seconds = time_limit // 1000 #makes it in seconds
     timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
     timer_text = title_font.render(f'Time left: ', True, "white") #rendering the timer
-    screen.blit(timer_text, (SCREEN_WIDTH - 700, 15))
+    screen.blit(timer_text, (SCREEN_WIDTH - 1000, 15))
     timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
-    screen.blit(timer_num, (SCREEN_WIDTH - 350, 18))
+    screen.blit(timer_num, (SCREEN_WIDTH - 650, 18))
+    
+    spud_text = title_font.render(f'Naked Spuds: {spud_count}', True, "white") #rendering the timer
+    screen.blit(spud_text, (SCREEN_WIDTH - 525, 18))
     #pygame.display.flip() #update display NOT NEEDED
 
     #visible potato!
@@ -224,8 +306,10 @@ def play_state(spud):
     Custum_Cursor.draw() #draw the cursor
     pygame.display.flip() #update display
 
+
     if time_limit <= 0:
         timer_reset = False
+        peeling= False
         game_state = "Menu"
 
 
@@ -283,6 +367,9 @@ while running: #while the game is running
                     fade_done = False
                     pygame.time.delay(1000)
                     fade_out(screen, 1250, 800)
+                    timer_reset = False
+                    peeling = False
+                    spud_count = 0
                     game_state = "Play"
                     Main_theme.stop()
                 if Options_button.check_input(mouse_pos): #if options button is pressed

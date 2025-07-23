@@ -8,6 +8,7 @@ class Pixel:
         self.width = width
         self.height = height
         self.locked = False
+        self.peeled = False
 
         # Rectangle for the pixel
         self.rect = pygame.Rect(0, 0, self.width, self.height)

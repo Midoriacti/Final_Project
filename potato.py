@@ -175,11 +175,7 @@ class Potato():
     
     def new(self):
         #creates a new potato
-        pass
-    
-    def delete(self):
-        #Deletes a potato
-        pass
+        self.__init__(500,270)
     
     def peel(self,mouse_pos):
         #peels a potato with the cursor
@@ -187,5 +183,15 @@ class Potato():
         for i in range(len(self.potato_grid)):
             if self.potato_grid[i].check_input(mouse_pos) and self.potato_grid[i].locked == False:
                 self.potato_grid[i].change_color(self.peel_color)
+                self.potato_grid[i].peeled = True
                 #If over a button call change_color()
-        pass
+                
+    def mouskatool(self): #Hot Dog! Mouseker Hey, Mouseker Hi, Mouseker Ho! Mouseker ready, Mouseker set, Here we go! (check if potato is peeled)
+        count = 0
+        for i in range(len(self.potato_grid)):
+            if self.potato_grid[i].peeled:
+                count += 1
+        if count == (len(self.potato_grid) - 47):
+            return True
+        else:
+            return False
