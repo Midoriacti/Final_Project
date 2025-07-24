@@ -6,6 +6,10 @@ from potato import Potato #imports potato class from potato.py (uses buttons to 
 
 pygame.init() #initialize pygame
 
+# initalize variables
+volume = 1.0 # default volume is max volume (1.0)
+volume_display = 100 # default display volume is max (100)
+
 #boolean variables to control the game loop
 running = True #runs the game
 playing = False #dictates when the player is actively playing (for later use)
@@ -95,6 +99,16 @@ fullscreen_button = Button(
     x_pos = 640, # x-coordinants on screen
     y_pos = 360, # y-coordinants on screen
     text_in = "Fullscreen", #text to display
+    font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60), #giving it the custom font
+    baseColor = "black", #sets the color (can only choose basic colors)
+    hoverColor = "white" #sets the color when hovered over
+)
+
+volume_button = Button(
+    image = scaled_button, #potato peel button
+    x_pos = 640, # x-coordinants on screen
+    y_pos = 500, # y-coordinants on screen
+    text_in = "Volume: 100", #text to display
     font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60), #giving it the custom font
     baseColor = "black", #sets the color (can only choose basic colors)
     hoverColor = "white" #sets the color when hovered over
@@ -229,7 +243,7 @@ def menu_state():
     Menu_img = pygame.image.load("Assets/Potato_Menu.png").convert() #load background image
     Menu_scale = pygame.transform.scale(Menu_img, (SCREEN_WIDTH, SCREEN_HEIGHT)) #scale the image to screen size
     if not fade_done: #if statement to control fade out if not used fade out loops
-        Main_theme.play(-1).set_volume(0.5) #plays audio and the -1 loops it, lowers volume
+        Main_theme.play(-1).set_volume(volume) #plays audio and the -1 loops it, lowers volume
         Menu_fade_in(screen, Menu_scale, 1250, 800) #call the menu fade in function
         fade_done = True #set fade done to true to stop the looping
     screen.blit(Menu_scale, (0,0)) #places the background
@@ -320,6 +334,7 @@ def options_state():
     Option_img = pygame.image.load("Assets/Options_Background.png").convert()
     Option_scale = pygame.transform.scale(Option_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     if not fade_done:
+        Main_theme.play(-1).set_volume(volume) #plays audio and the -1 loops it, lowers volume
         Option_fade_in(screen, Option_scale, 1250, 800)
         fade_done = True
     screen.blit(Option_scale, (0,0))
@@ -328,6 +343,8 @@ def options_state():
     back_button.update(screen)
     fullscreen_button.change_color(mouse_pos)
     fullscreen_button.update(screen)
+    volume_button.change_color(mouse_pos)
+    volume_button.update(screen)
     #pygame.display.flip()
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
@@ -393,6 +410,7 @@ while running: #while the game is running
                     fade_out(screen, 1250, 800)
                     fade_done = False
                     game_state = "Menu"
+                    Main_theme.stop()
                 if fullscreen_button.check_input(mouse_pos): #if back button is pressed
                     pygame.time.delay(1000)
                     pygame.display.toggle_fullscreen()
@@ -402,6 +420,18 @@ while running: #while the game is running
                     elif fullscreen == True:
                         fullscreen_button.text_change("Fullscreen") # text change upon clicking
                         fullscreen = False
+                    pygame.display.update()
+                if volume_button.check_input(mouse_pos): # if volume button is pressed
+                    pygame.time.delay(1000)
+                    if volume < 1.0 and volume_display < 100:
+                        volume += .10
+                        volume_display += 10
+                    else:
+                        volume = 0.0
+                        volume_display = 0
+                    volume_button.text_change(f"Volume: {volume_display}") # text change upon clicking
+                    Main_theme.set_volume(volume)
+                    # print(f"PRINTING THE VOLUME IN OPTIONS: {Main_theme.get_volume()}")
                     pygame.display.update()
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
             Clicked = False 
