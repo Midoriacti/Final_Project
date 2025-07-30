@@ -8,6 +8,8 @@ class Potato():
         self.potato_y = potato_y
         self.border_color = (78,35,0,255)
         self.base_color = (165,89,0,255)
+        self.peeled_too_far = False
+        self.peeled = False
         
         #self.border_color = "black"
         #self.base_color = "red"
@@ -184,7 +186,20 @@ class Potato():
             if self.potato_grid[i].check_input(mouse_pos) and self.potato_grid[i].locked == False:
                 self.potato_grid[i].change_color(self.peel_color)
                 self.potato_grid[i].peeled = True
+                self.peeled = True
                 #If over a button call change_color()
+            elif self.potato_grid[i].check_input(mouse_pos) and self.potato_grid[i].locked == True:
+                self.peeled_too_far = True
+                self.peeled = False
+        return self.peeled
+                
+    def ouch(self):
+        #checking if we went too far
+        if self.peeled_too_far:
+            self.peeled_too_far = False
+            return True
+        else:
+            return False
                 
     def mouskatool(self): #Hot Dog! Mouseker Hey, Mouseker Hi, Mouseker Ho! Mouseker ready, Mouseker set, Here we go! (check if potato is peeled)
         count = 0

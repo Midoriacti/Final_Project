@@ -24,7 +24,7 @@ SCREEN_HEIGHT = 800
 
 #sizing adjustments for screen, title, and buttons
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
-game_state = "Play" #initializes game state to Splash for the game start
+game_state = "Splash" #initializes game state to Splash for the game start
 
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
@@ -43,10 +43,24 @@ Custum_Cursor = Cursor()
 #clock = pygame.time.Clock() #for changing internal clock
 #FPS = 30
 MAX_TIMER = 100000
+MAX_LIVES = 6
+SCORE_VAL = 10
+
+player_score = 0
+
+Play_theme = pygame.mixer.Sound("Assets/Play_Theme.wav")
+Alarm = pygame.mixer.Sound("Assets/Timer_Alarm.wav")
+Peeling_effect = pygame.mixer.Sound("Assets/peeling_effect.mp3")
 time_limit = MAX_TIMER #this is in milliseconds
+lives = MAX_LIVES
 timer_reset = True
+timer_done = False
+Themeing = False
+peeling_music = False
+bad_peeling = False
 peeling = False
 peeled = False
+peeling_again = True
 spud_count = 0
 spud = Potato(500,270)
 
@@ -269,12 +283,18 @@ def menu_state():
 
 def play_state(spud):
     global game_state
+    global lives
+    global player_score
     global time_limit
     global timer_reset
+    global timer_done
     global mouse_pos
     global fade_done
     global spud_count
     global peeling
+    global bad_peeling
+    global peeling_again
+    
 
     if not peeling:
         spud.new()
@@ -282,6 +302,7 @@ def play_state(spud):
             
     if spud.mouskatool():
         spud_count += 1
+        player_score += SCORE_VAL * (lives * 1.25)
         peeling = False
     
     if not timer_reset:
@@ -291,40 +312,116 @@ def play_state(spud):
     Game_scale = pygame.transform.scale(Game_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     if not fade_done:
         Game_fade_in(screen, Game_scale, 1250, 800)
+        Play_theme.play(-1).set_volume(0.85)
+        lives = MAX_LIVES
+        player_score = 0
         fade_done = True
     screen.blit(Game_scale, (0,0))
     mouse_pos = pygame.mouse.get_pos()
     back_button.change_color(mouse_pos)
     back_button.update(screen)
-    #pygame.display.flip() #NOT NEEDED
 
-    #timer section starts here (currently doesn't work if anyone wants to fix it)
+    #timer section starts here 
     #start_time = pygame.time.get_ticks() #starts recording time
     time_limit -= 25 # counts down 25 is basically a second...for some reason
     seconds = time_limit // 1000 #makes it in seconds
     timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
+    
+    #black outline for timer
+    timer_text_out = title_font.render(f'Time left: ', True, "black") #rendering the timer
+    screen.blit(timer_text_out, (SCREEN_WIDTH - 995, 12))
+    timer_num_out = title_font.render(f'{seconds}', True, "black") #rendering the numbers
+    screen.blit(timer_num_out, (SCREEN_WIDTH - 645, 15))
+    
+    
     timer_text = title_font.render(f'Time left: ', True, "white") #rendering the timer
     screen.blit(timer_text, (SCREEN_WIDTH - 1000, 15))
     timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
     screen.blit(timer_num, (SCREEN_WIDTH - 650, 18))
     
+    #Black outline for spuds
+    spud_text = title_font.render(f'Naked Spuds: {spud_count}', True, "black") #rendering the timer
+    screen.blit(spud_text, (SCREEN_WIDTH - 520, 15))
+    
     spud_text = title_font.render(f'Naked Spuds: {spud_count}', True, "white") #rendering the timer
     screen.blit(spud_text, (SCREEN_WIDTH - 525, 18))
     #pygame.display.flip() #update display NOT NEEDED
 
+    #put the hand behind the potato
+    Hand_img = pygame.image.load("Assets/Hand_3_Fixed.png").convert_alpha()
+    #print(f"Image width: {Hand_img.get_width()}")
+    #print(f"Image height: {Hand_img.get_height()}")
+    scaled_hand = pygame.transform.scale(Hand_img, (600, 600))
+    screen.blit(scaled_hand, (SCREEN_WIDTH / 4, 100))
+
+    #check if we peeled over the edge
+    if peeling_again:
+        bad_peeling = False
+    if spud.ouch() and lives > 0 and not bad_peeling:
+        lives -= 1
+        bad_peeling = True
+    
+    if lives < 6:
+        #put mark on 1st finger
+        Mark_1 = pygame.Rect(SCREEN_WIDTH/3 + 80, 230, 10, 50)
+        pygame.draw.rect(screen, "red", Mark_1)
+        
+        if lives < 5:
+            #put mark on 2nd finger
+            Mark_2 = pygame.Rect(SCREEN_WIDTH/2 + 70, 165, 7, 35)
+            pygame.draw.rect(screen, "red", Mark_2)
+            
+            if lives < 4:
+                #put mark on 3rd finger
+                Mark_3_1 = pygame.Rect(SCREEN_WIDTH/2 + 130, 195, 7, 15)
+                Mark_3_2 = pygame.Rect(SCREEN_WIDTH/2 + 123, 210, 7, 15)
+                pygame.draw.rect(screen, "red", Mark_3_1)
+                pygame.draw.rect(screen, "red", Mark_3_2)
+                
+                if lives < 3:
+                    #put mark on 4th finger
+                    Mark_4_1 = pygame.Rect(SCREEN_WIDTH/2 + 190, 195, 7, 15)
+                    Mark_4_2 = pygame.Rect(SCREEN_WIDTH/2 + 183, 208, 7, 15)
+                    Mark_4_3 = pygame.Rect(SCREEN_WIDTH/2 + 176, 221, 7, 15)
+                    pygame.draw.rect(screen, "red", Mark_4_1)
+                    pygame.draw.rect(screen, "red", Mark_4_2)
+                    pygame.draw.rect(screen, "red", Mark_4_3)
+                    
+                    if lives < 2:
+                        #put mark on 5th finger
+                        Mark_5_1 = pygame.Rect(SCREEN_WIDTH/2 + 200, 320, 7, 25)
+                        Mark_5_2 = pygame.Rect(SCREEN_WIDTH/2 + 193, 340, 7, 25)
+                        pygame.draw.rect(screen, "red", Mark_5_1)
+                        pygame.draw.rect(screen, "red", Mark_5_2)
+                
+    
     #visible potato!
     spud.show(screen)
+    
 
     #cursor stuff leave this last or else cursor will not appear
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
     pygame.display.flip() #update display
 
-
+    if lives <= 0:
+        #Game over (Failure)
+        Play_theme.stop()
+        Peeling_effect.stop()
+        game_state = "Menu"
+        print(player_score)
+        
+        
     if time_limit <= 0:
+        #Time ran out
+        Play_theme.stop()
+        Peeling_effect.stop()
+        Alarm.play().set_volume(0.5)
         timer_reset = False
         peeling= False
+        pygame.time.delay(2500)
         game_state = "Menu"
+        print(player_score)
 
 
 def options_state():
@@ -401,9 +498,11 @@ while running: #while the game is running
                 if back_button.check_input(mouse_pos): #if back button is pressed
                     pygame.time.delay(1000)
                     fade_out(screen, 1250, 800)
+                    Play_theme.stop()
+                    Peeling_effect.stop()
                     fade_done = False
                     game_state = "Menu"
-                spud.peel(mouse_pos)
+                peeling_again = spud.peel(mouse_pos)
             elif game_state == "Options":
                 if back_button.check_input(mouse_pos): #if back button is pressed
                     pygame.time.delay(1000)
@@ -434,11 +533,19 @@ while running: #while the game is running
                     # print(f"PRINTING THE VOLUME IN OPTIONS: {Main_theme.get_volume()}")
                     pygame.display.update()
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
-            Clicked = False 
+            Clicked = False
+            bad_peeling = False
+            peeling_again = True
+            if game_state == "Play" and peeling_music:
+                Peeling_effect.stop()
+                peeling_music = False
         
         if event.type == pygame.MOUSEMOTION:  # <-- NEW BLOCK: handle dragging
             if Clicked and game_state == "Play":
-                spud.peel(mouse_pos)
+                peeling_again = spud.peel(mouse_pos)
+                if not peeling_music:
+                    Peeling_effect.play(-1).set_volume(0.4)
+                    peeling_music = True
         
         if event.type == pygame.QUIT: #in the event of quit
             running = False #stop the while loop
