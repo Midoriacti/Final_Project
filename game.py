@@ -521,7 +521,6 @@ while running: #while the game is running
                         fullscreen = False
                     pygame.display.update()
                 if volume_button.check_input(mouse_pos): # if volume button is pressed
-                    pygame.time.delay(1000)
                     if volume < 1.0 and volume_display < 100:
                         volume += .10
                         volume_display += 10
