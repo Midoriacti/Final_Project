@@ -131,6 +131,16 @@ volume_button = Button(
     baseColor = "black", #sets the color (can only choose basic colors)
     hoverColor = "white" #sets the color when hovered over
 )
+
+menu_button = Button(
+    image = scaled_button, #potato peel button
+    x_pos = SCREEN_WIDTH // 2, # x-coordinants on screen
+    y_pos = 500, # y-coordinants on screen
+    text_in = "Main Menu", #text to display
+    font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60), #giving it the custom font
+    baseColor = "black", #sets the color (can only choose basic colors)
+    hoverColor = "white" #sets the color when hovered over
+)
 #buttons end 
 
 #fades start
@@ -165,6 +175,16 @@ def Game_fade_in(screen, Game_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
         pygame.time.delay(15)
 
 def Option_fade_in(screen, Option_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
+    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    fade.fill((0,0,0))
+    for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
+        screen.blit(Option_scale, (0,0))
+        fade.set_alpha(alpha)
+        screen.blit(fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(15)
+
+def Game_over_fade_in(screen, Option_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
     fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
     fade.fill((0,0,0))
     for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
@@ -309,7 +329,7 @@ def play_state(spud):
             
     if spud.mouskatool():
         spud_count += 1
-        player_score += SCORE_VAL #math.ceil((int(SCORE_VAL) ** 2)*(int(lives) * .25)) <-- Math to be done in game over
+        player_score += SCORE_VAL
         peeling = False
     
     if not timer_reset:
@@ -418,7 +438,7 @@ def play_state(spud):
         #Game over (Failure)
         Play_theme.stop()
         Peeling_effect.stop()
-        game_state = "Menu"
+        game_state = "Game Over"
         print(player_score)
         
         
@@ -430,7 +450,7 @@ def play_state(spud):
         timer_reset = False
         peeling= False
         pygame.time.delay(2500)
-        game_state = "Menu"
+        game_state = "Game Over"
         print(player_score)
 
 
@@ -459,7 +479,48 @@ def options_state():
 
 
 def game_over_state():
-    pass
+    global lives
+    global player_score
+    global mouse_pos
+    global fade_done
+    
+    # calculate score
+    scoring = math.ceil((int(SCORE_VAL) ** 2)*(int(lives) * .25)) 
+    
+    Game_over_img = pygame.image.load("Assets/Game_Over_Screen.png").convert()
+    Game_over_scale = pygame.transform.scale(Game_over_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    if not fade_done:
+        Main_theme.play(-1).set_volume(menu_volume) #plays audio and the -1 loops it, lowers volume
+        Game_over_fade_in(screen, Game_over_scale, 1250, 800)
+        fade_done = True
+    screen.blit(Game_over_scale, (0,0))
+
+    game_over_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 250) #loading the font for the title
+
+    # game over text
+    game_over_text_back = game_over_font.render("Game Over", True, "black") #rendering the title
+    game_over_rect_back = game_over_text_back.get_rect(center=(SCREEN_WIDTH // 2, 172))
+    screen.blit(game_over_text_back, game_over_rect_back) #update title
+    game_over_text = game_over_font.render("Game Over", True, "white") #rendering the title
+    game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
+    screen.blit(game_over_text, game_over_rect) #update title
+    
+    
+    # score text
+    score_text_back = title_font.render(f"Score: {scoring}", True, "black") #rendering the title
+    score_rect_back = score_text_back.get_rect(center=(SCREEN_WIDTH // 2, 330))  
+    screen.blit(score_text_back, score_rect_back) #update title
+    score_text = title_font.render(f"Score: {scoring}", True, "white") #rendering the title
+    score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 333))
+    screen.blit(score_text, score_rect) #update title
+    
+    mouse_pos = pygame.mouse.get_pos()
+    menu_button.change_color(mouse_pos)
+    menu_button.update(screen) 
+    
+    Custum_Cursor.update() #update the cursor location
+    Custum_Cursor.draw() #draw the cursor
+    pygame.display.flip() #update display
 
 
 #game code
@@ -521,14 +582,15 @@ while running: #while the game is running
                     fade_done = False
                     game_state = "Menu"
                     Main_theme.stop()
-                if fullscreen_button.check_input(mouse_pos): #if back button is pressed
-                    pygame.time.delay(1000)
+                if fullscreen_button.check_input(mouse_pos): #if fullscreen button is pressed
                     pygame.display.toggle_fullscreen()
+                    # if in windowed
                     if fullscreen == False:
-                        fullscreen_button.text_change("Windowed") # text change upon clicking
-                        fullscreen = True
-                    elif fullscreen == True:
                         fullscreen_button.text_change("Fullscreen") # text change upon clicking
+                        fullscreen = True
+                    # if in fullscreen
+                    elif fullscreen == True:
+                        fullscreen_button.text_change("Windowed") # text change upon clicking
                         fullscreen = False
                     pygame.display.update()
                 if volume_button.check_input(mouse_pos): # if volume button is pressed
@@ -545,6 +607,13 @@ while running: #while the game is running
                     volume_button.text_change(f"Volume: {volume_display}") # text change upon clicking
                     Main_theme.set_volume(menu_volume)
                     pygame.display.update()
+            elif game_state == "Game Over":
+                if menu_button.check_input(mouse_pos):
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    fade_done = False
+                    game_state = "Menu"
+                    # game_over_theme.stop()   
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
             Clicked = False
             bad_peeling = False
