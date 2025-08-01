@@ -1,5 +1,6 @@
 import pygame #import pygame
 import random #import random for chance variables
+import math
 from button import Button #import button class from button.py (can be used for all buttons)
 from cursor import Cursor #imports cursor class from cursor.py
 from potato import Potato #imports potato class from potato.py (uses buttons to make potatoes)
@@ -30,6 +31,8 @@ game_state = "Splash" #initializes game state to Splash for the game start
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
 title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
+title_rect_back = title_text.get_rect(center=(SCREEN_WIDTH // 2 + 5, 172))
+title_back = title_font.render("Untitled Potato Game", True, "black") #rendering the title
 screen.blit(title_text, title_rect) #update title
 
 raw_button = pygame.image.load("Assets/Peel_button.png").convert_alpha() #load the button image
@@ -45,7 +48,7 @@ Custum_Cursor = Cursor()
 #FPS = 30
 MAX_TIMER = 100000
 MAX_LIVES = 6
-SCORE_VAL = 10
+SCORE_VAL = 1
 
 player_score = 0
 
@@ -262,6 +265,9 @@ def menu_state():
         Menu_fade_in(screen, Menu_scale, 1250, 800) #call the menu fade in function
         fade_done = True #set fade done to true to stop the looping
     screen.blit(Menu_scale, (0,0)) #places the background
+    
+    screen.blit(title_back, title_rect_back) #update title
+    
     screen.blit(title_text, title_rect) #places the title text
     mouse_pos = pygame.mouse.get_pos() #constantly checks for the position of the mouse
     #these look for the mouse position if it goes on or off a button the color will update from base to hover or vise versa
@@ -303,7 +309,7 @@ def play_state(spud):
             
     if spud.mouskatool():
         spud_count += 1
-        player_score += SCORE_VAL * (lives * 1.25)
+        player_score += SCORE_VAL #math.ceil((int(SCORE_VAL) ** 2)*(int(lives) * .25)) <-- Math to be done in game over
         peeling = False
     
     if not timer_reset:
@@ -459,6 +465,7 @@ def game_over_state():
 #game code
 while running: #while the game is running
     pygame.mouse.set_visible(False) #make normal cursor invisible
+    mouse_pos = pygame.mouse.get_pos()
 
 
     match game_state:
