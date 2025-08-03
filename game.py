@@ -68,6 +68,8 @@ peeling_again = True
 spud_count = 0
 spud = Potato(500,270)
 
+Game_over_theme = pygame.mixer.Sound("Assets/Game_over_music2.mp3") #game over music
+
 #Horror
 horror_shade = (255, 0, 0, 90) #red
 
@@ -322,7 +324,6 @@ def play_state(spud):
     global bad_peeling
     global peeling_again
     
-
     if not peeling:
         spud.new()
         peeling = True
@@ -439,6 +440,7 @@ def play_state(spud):
         Play_theme.stop()
         Peeling_effect.stop()
         game_state = "Game Over"
+        fade_done = False
         print(player_score)
         
         
@@ -451,13 +453,14 @@ def play_state(spud):
         peeling= False
         pygame.time.delay(2500)
         game_state = "Game Over"
+        fade_done = False
         print(player_score)
 
 
 def options_state():
     global mouse_pos
     global fade_done
-    
+
     Option_img = pygame.image.load("Assets/Options_Background.png").convert()
     Option_scale = pygame.transform.scale(Option_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     if not fade_done:
@@ -490,7 +493,8 @@ def game_over_state():
     Game_over_img = pygame.image.load("Assets/Game_Over_Screen.png").convert()
     Game_over_scale = pygame.transform.scale(Game_over_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     if not fade_done:
-        Main_theme.play(-1).set_volume(menu_volume) #plays audio and the -1 loops it, lowers volume
+        print("ARE YOU GETTING HERE?")
+        Game_over_theme.play(-1).set_volume(menu_volume) #plays audio and the -1 loops it, lowers volume
         Game_over_fade_in(screen, Game_over_scale, 1250, 800)
         fade_done = True
     screen.blit(Game_over_scale, (0,0))
@@ -504,7 +508,6 @@ def game_over_state():
     game_over_text = game_over_font.render("Game Over", True, "white") #rendering the title
     game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
     screen.blit(game_over_text, game_over_rect) #update title
-    
     
     # score text
     score_text_back = title_font.render(f"Score: {scoring}", True, "black") #rendering the title
@@ -613,7 +616,7 @@ while running: #while the game is running
                     fade_out(screen, 1250, 800)
                     fade_done = False
                     game_state = "Menu"
-                    # game_over_theme.stop()   
+                    Game_over_theme.stop()   
         if event.type == pygame.MOUSEBUTTONUP: #in the event of a button release 
             Clicked = False
             bad_peeling = False
