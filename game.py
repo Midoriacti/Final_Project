@@ -485,7 +485,7 @@ def game_over_state():
     global fade_done
     
     # calculate score
-    scoring = math.ceil((int(SCORE_VAL) ** 2)*(int(lives) * .25)) 
+    scoring = math.ceil((int(SCORE_VAL * spud_count) ** 2)*(int(lives) * .25))
     
     Game_over_img = pygame.image.load("Assets/Game_Over_Screen.png").convert()
     Game_over_scale = pygame.transform.scale(Game_over_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
