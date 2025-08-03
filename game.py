@@ -26,7 +26,7 @@ SCREEN_HEIGHT = 800
 
 #sizing adjustments for screen, title, and buttons
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
-game_state = "Options" #initializes game state to Splash for the game start
+game_state = "Splash" #initializes game state to Splash for the game start
 
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
@@ -552,21 +552,29 @@ def game_over_state():
     Game_over_img = pygame.image.load("Assets/Game_Over_Screen.png").convert()
     Game_over_scale = pygame.transform.scale(Game_over_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     if not fade_done:
-        print("ARE YOU GETTING HERE?")
         Game_over_theme.play(-1).set_volume(menu_volume) #plays audio and the -1 loops it, lowers volume
         Game_over_fade_in(screen, Game_over_scale, 1250, 800)
         fade_done = True
     screen.blit(Game_over_scale, (0,0))
 
-    game_over_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 250) #loading the font for the title
+    game_over_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 150) #loading the font for the title
 
-    # game over text
-    game_over_text_back = game_over_font.render("Game Over", True, "black") #rendering the title
-    game_over_rect_back = game_over_text_back.get_rect(center=(SCREEN_WIDTH // 2, 172))
-    screen.blit(game_over_text_back, game_over_rect_back) #update title
-    game_over_text = game_over_font.render("Game Over", True, "white") #rendering the title
-    game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
-    screen.blit(game_over_text, game_over_rect) #update title
+    if scoring >= 10:
+        # winning text
+        you_win_text_back = game_over_font.render("You Win!", True, "black") #rendering the title
+        you_win_rect_back = you_win_text_back.get_rect(center=(SCREEN_WIDTH // 2 + 5, 172))
+        screen.blit(you_win_text_back, you_win_rect_back) #update title
+        you_win_text = game_over_font.render("You Win!", True, "white") #rendering the title
+        you_win_rect = you_win_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
+        screen.blit(you_win_text, you_win_rect) #update title
+    else:
+        # losing text
+        you_lose_text_back = game_over_font.render("You Lose  :(", True, "black") #rendering the title
+        you_lose_rect_back = you_lose_text_back.get_rect(center=(SCREEN_WIDTH // 2 + 5, 172))
+        screen.blit(you_lose_text_back, you_lose_rect_back) #update title
+        you_lose_text = game_over_font.render("You Lose  :(", True, "white") #rendering the title
+        you_lose_rect = you_lose_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
+        screen.blit(you_lose_text, you_lose_rect) #update title
     
     # score text
     score_text_back = title_font.render(f"Score: {scoring}", True, "black") #rendering the title
