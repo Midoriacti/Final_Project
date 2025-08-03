@@ -26,7 +26,7 @@ SCREEN_HEIGHT = 800
 
 #sizing adjustments for screen, title, and buttons
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
-game_state = "Splash" #initializes game state to Splash for the game start
+game_state = "Options" #initializes game state to Splash for the game start
 
 title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
@@ -106,8 +106,8 @@ Quit_button = Button(
 
 back_button = Button(
     image = small_scaled_button,
-    x_pos = 140,
-    y_pos = 40,
+    x_pos = 130,
+    y_pos = 70,
     text_in = "Back",
     font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60),
     baseColor = "black",
@@ -132,6 +132,16 @@ volume_button = Button(
     font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60), #giving it the custom font
     baseColor = "black", #sets the color (can only choose basic colors)
     hoverColor = "white" #sets the color when hovered over
+)
+
+help_button = Button(
+    image = scaled_button,
+    x_pos = 640,
+    y_pos = 640,
+    text_in = "Help",
+    font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60),
+    baseColor = "black",
+    hoverColor = "white"
 )
 
 menu_button = Button(
@@ -181,6 +191,16 @@ def Option_fade_in(screen, Option_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
     fade.fill((0,0,0))
     for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
         screen.blit(Option_scale, (0,0))
+        fade.set_alpha(alpha)
+        screen.blit(fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(15)
+
+def Help_fade_in(screen, Help_scale, SCREEN_WIDTH, SCREEN_HEIGHT):
+    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    fade.fill((0,0,0))
+    for alpha in range (255, -1, -3): #aplha = opacity thus when alpha is used the opacity is altered
+        screen.blit(Help_scale, (0,0))
         fade.set_alpha(alpha)
         screen.blit(fade, (0,0))
         pygame.display.update()
@@ -468,6 +488,15 @@ def options_state():
         Option_fade_in(screen, Option_scale, 1250, 800)
         fade_done = True
     screen.blit(Option_scale, (0,0))
+
+    options_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 200) #loading the font for the title
+    options_text = options_font.render("Options", True, "white") #rendering the title
+    options_rect = options_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
+    options_rect_back = options_text.get_rect(center=(SCREEN_WIDTH // 2 + 5, 172))
+    options_back = options_font.render("Options", True, "black") #rendering the title
+    screen.blit(options_back, options_rect_back) #update title
+    screen.blit(options_text, options_rect) #update title
+
     mouse_pos = pygame.mouse.get_pos()
     back_button.change_color(mouse_pos)
     back_button.update(screen)
@@ -475,7 +504,37 @@ def options_state():
     fullscreen_button.update(screen)
     volume_button.change_color(mouse_pos)
     volume_button.update(screen)
+    help_button.change_color(mouse_pos)
+    help_button.update(screen)
     #pygame.display.flip()
+    Custum_Cursor.update() #update the cursor location
+    Custum_Cursor.draw() #draw the cursor
+    pygame.display.flip() #update display
+
+
+def help_state():
+    global mouse_pos
+    global fade_done
+
+    help_img = pygame.image.load("Assets/help_screen.png").convert()
+    Help_scale = pygame.transform.scale(help_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    if not fade_done:
+        Main_theme.play(-1).set_volume(menu_volume) #plays audio and the -1 loops it, lowers volume
+        Help_fade_in(screen, Help_scale, 1250, 800)
+        fade_done = True
+    screen.blit(Help_scale, (0,0))
+
+    help_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 200) #loading the font for the title
+    help_text = help_font.render("Help", True, "white") #rendering the title
+    help_rect = help_text.get_rect(center=(SCREEN_WIDTH // 2, 90)) 
+    help_rect_back = help_text.get_rect(center=(SCREEN_WIDTH // 2 + 5, 87))
+    help_back = help_font.render("Help", True, "black") #rendering the title
+    screen.blit(help_back, help_rect_back) #update title
+    screen.blit(help_text, help_rect) #update title
+
+    mouse_pos = pygame.mouse.get_pos()
+    back_button.change_color(mouse_pos)
+    back_button.update(screen)    
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
     pygame.display.flip() #update display
@@ -539,6 +598,8 @@ while running: #while the game is running
             menu_state()
         case "Options":
             options_state()
+        case "Help":
+            help_state()
         case "Play":
             play_state(spud)
         case "Game Over":
@@ -610,6 +671,19 @@ while running: #while the game is running
                     volume_button.text_change(f"Volume: {volume_display}") # text change upon clicking
                     Main_theme.set_volume(menu_volume)
                     pygame.display.update()
+                if help_button.check_input(mouse_pos): # if help button is pressed
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    fade_done = False
+                    game_state = "Help"
+                    Main_theme.stop()
+            elif game_state == "Help":
+                if back_button.check_input(mouse_pos): #if back button is pressed
+                    pygame.time.delay(1000)
+                    fade_out(screen, 1250, 800)
+                    fade_done = False
+                    game_state = "Options"
+                    Main_theme.stop()
             elif game_state == "Game Over":
                 if menu_button.check_input(mouse_pos):
                     pygame.time.delay(1000)
