@@ -4,6 +4,7 @@ import math
 from button import Button #import button class from button.py (can be used for all buttons)
 from cursor import Cursor #imports cursor class from cursor.py
 from potato import Potato #imports potato class from potato.py (uses buttons to make potatoes)
+from peel import Peel #import peel class for animations
 
 pygame.init() #initialize pygame
 
@@ -51,6 +52,8 @@ MAX_LIVES = 6
 SCORE_VAL = 1
 
 player_score = 0
+
+peel_list = []
 
 Play_theme = pygame.mixer.Sound("Assets/Play_Theme.wav")
 Alarm = pygame.mixer.Sound("Assets/Timer_Alarm.wav")
@@ -451,6 +454,13 @@ def play_state(spud):
     
 
     #cursor stuff leave this last or else cursor will not appear
+    
+    for peel in peel_list[:]:
+        peel.update()
+        peel.draw(screen)
+        if peel.is_off_screen(screen.get_height()):
+            peel_list.remove(peel)
+    
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
     pygame.display.flip() #update display
@@ -704,6 +714,10 @@ while running: #while the game is running
             bad_peeling = False
             peeling_again = True
             if game_state == "Play" and peeling_music:
+                
+                x, y = pygame.mouse.get_pos()
+                peel_list.append(Peel(x, y, scale=0.2))
+                
                 Peeling_effect.stop()
                 peeling_music = False
         
