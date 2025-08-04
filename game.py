@@ -1,4 +1,6 @@
 import pygame #import pygame
+import pygame_widgets # import pygame_widgets
+from pygame_widgets.slider import Slider
 import random #import random for chance variables
 import math
 from button import Button #import button class from button.py (can be used for all buttons)
@@ -29,7 +31,7 @@ SCREEN_HEIGHT = 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  #makes a screen
 game_state = "Splash" #initializes game state to Splash for the game start
 
-title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the title
+title_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 150) #loading the font for the title
 title_text = title_font.render("Untitled Potato Game", True, "white") #rendering the title
 title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 175)) 
 title_rect_back = title_text.get_rect(center=(SCREEN_WIDTH // 2 + 5, 172))
@@ -43,6 +45,8 @@ small_scaled_button = pygame.transform.scale(raw_button, (250, 130)) #make small
 Main_theme = pygame.mixer.Sound("Assets/Main_theme.mp3") #main music
 Custum_Cursor = Cursor()
 
+# make the slider using pygame_widgets
+slider = Slider(screen, 545, 648, 200, 20, min=0, max=99, step=1, colour=(26, 44, 56), handleColour=(189, 189, 189))
 
 #Gameplay loop variables
 #clock = pygame.time.Clock() #for changing internal clock
@@ -127,20 +131,10 @@ fullscreen_button = Button(
     hoverColor = "white" #sets the color when hovered over
 )
 
-volume_button = Button(
-    image = scaled_button, #potato peel button
-    x_pos = 640, # x-coordinants on screen
-    y_pos = 500, # y-coordinants on screen
-    text_in = "Volume: 100", #text to display
-    font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60), #giving it the custom font
-    baseColor = "black", #sets the color (can only choose basic colors)
-    hoverColor = "white" #sets the color when hovered over
-)
-
 help_button = Button(
     image = scaled_button,
     x_pos = 640,
-    y_pos = 640,
+    y_pos = 500,
     text_in = "Help",
     font = pygame.font.Font('Assets/Ithaca-LVB75.ttf', 60),
     baseColor = "black",
@@ -379,25 +373,25 @@ def play_state(spud):
     #start_time = pygame.time.get_ticks() #starts recording time
     time_limit -= 25 # counts down 25 is basically a second...for some reason
     seconds = time_limit // 1000 #makes it in seconds
-    timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the timer
+    timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the timer
     
     #black outline for timer
-    timer_text_out = title_font.render(f'Time left: ', True, "black") #rendering the timer
+    timer_text_out = timer_font.render(f'Time left: ', True, "black") #rendering the timer
     screen.blit(timer_text_out, (SCREEN_WIDTH - 995, 12))
-    timer_num_out = title_font.render(f'{seconds}', True, "black") #rendering the numbers
+    timer_num_out = timer_font.render(f'{seconds}', True, "black") #rendering the numbers
     screen.blit(timer_num_out, (SCREEN_WIDTH - 645, 15))
     
     
-    timer_text = title_font.render(f'Time left: ', True, "white") #rendering the timer
+    timer_text = timer_font.render(f'Time left: ', True, "white") #rendering the timer
     screen.blit(timer_text, (SCREEN_WIDTH - 1000, 15))
-    timer_num = title_font.render(f'{seconds}', True, "white") #rendering the numbers
+    timer_num = timer_font.render(f'{seconds}', True, "white") #rendering the numbers
     screen.blit(timer_num, (SCREEN_WIDTH - 650, 18))
     
     #Black outline for spuds
-    spud_text = title_font.render(f'Naked Spuds: {spud_count}', True, "black") #rendering the timer
+    spud_text = timer_font.render(f'Naked Spuds: {spud_count}', True, "black") #rendering the timer
     screen.blit(spud_text, (SCREEN_WIDTH - 520, 15))
     
-    spud_text = title_font.render(f'Naked Spuds: {spud_count}', True, "white") #rendering the timer
+    spud_text = timer_font.render(f'Naked Spuds: {spud_count}', True, "white") #rendering the timer
     screen.blit(spud_text, (SCREEN_WIDTH - 525, 18))
     #pygame.display.flip() #update display NOT NEEDED
 
@@ -512,14 +506,29 @@ def options_state():
     back_button.update(screen)
     fullscreen_button.change_color(mouse_pos)
     fullscreen_button.update(screen)
-    volume_button.change_color(mouse_pos)
-    volume_button.update(screen)
+
+    # visuals for the volume scaler (background peel and text)
+    screen.blit(scaled_button, (440, 565)) #displays image    
+
+    volume_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 50) #loading the font for the title
+    volume_text = volume_font.render("Volume:", True, "black") #rendering the title
+    volume_rect = volume_text.get_rect(center=(SCREEN_WIDTH // 2 + 20, 625)) 
+    screen.blit(volume_text, volume_rect) #update title
+
+    # volume slider
+    volume_change = slider.getValue() / 100
+    Main_theme.set_volume(volume_change)
+    Play_theme.set_volume(volume_change)
+    Game_over_theme.set_volume(volume_change)
+    Alarm.set_volume(volume_change)
+    Peeling_effect.set_volume(volume_change)
+
     help_button.change_color(mouse_pos)
     help_button.update(screen)
     #pygame.display.flip()
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
-    pygame.display.flip() #update display
+    # pygame.display.flip() #update display
 
 
 def help_state():
@@ -675,20 +684,6 @@ while running: #while the game is running
                         fullscreen_button.text_change("Windowed") # text change upon clicking
                         fullscreen = False
                     pygame.display.update()
-                if volume_button.check_input(mouse_pos): # if volume button is pressed
-                    if volume_display < 100:
-                        if menu_volume < 1.0:
-                            menu_volume += .10
-                            volume_display += 10
-                        if play_volume < 0.5:
-                            play_volume += .10
-                    else:
-                        menu_volume = 0.0
-                        play_volume = 0.0
-                        volume_display = 0
-                    volume_button.text_change(f"Volume: {volume_display}") # text change upon clicking
-                    Main_theme.set_volume(menu_volume)
-                    pygame.display.update()
                 if help_button.check_input(mouse_pos): # if help button is pressed
                     pygame.time.delay(1000)
                     fade_out(screen, 1250, 800)
@@ -732,5 +727,13 @@ while running: #while the game is running
             running = False #stop the while loop
     
     #clock.tick(FPS) #if we start changing the speed
+    # update the slider in options
+    if game_state == "Options":
+        pygame_widgets.update(event)
+        pygame.display.update()
+        Custum_Cursor.update() #update the cursor location
+        Custum_Cursor.draw() #draw the cursor
+        pygame.display.flip() #update display
+
 
 pygame.quit() #close the game
