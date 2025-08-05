@@ -19,7 +19,7 @@
       - Displays the player's score
       - Includes a button that can return the player to the main menu
 
-**Installation **:
+**Installation**:
  - Python version 3.12.7
  - Pygame (python -m pip install pygame)
  - Pygame Widgets (python -m pip install pygame-widgets)
