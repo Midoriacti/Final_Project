@@ -1,7 +1,6 @@
 import pygame #import pygame
 import pygame_widgets # import pygame_widgets
 from pygame_widgets.slider import Slider
-import random #import random for chance variables
 import math
 from button import Button #import button class from button.py (can be used for all buttons)
 from cursor import Cursor #imports cursor class from cursor.py
@@ -49,8 +48,6 @@ Custum_Cursor = Cursor()
 slider = Slider(screen, 545, 648, 200, 20, min=0, max=99, step=1, colour=(26, 44, 56), handleColour=(189, 189, 189))
 
 #Gameplay loop variables
-#clock = pygame.time.Clock() #for changing internal clock
-#FPS = 30
 MAX_TIMER = 100000
 MAX_LIVES = 6
 SCORE_VAL = 1
@@ -370,7 +367,6 @@ def play_state(spud):
     back_button.update(screen)
 
     #timer section starts here 
-    #start_time = pygame.time.get_ticks() #starts recording time
     time_limit -= 25 # counts down 25 is basically a second...for some reason
     seconds = time_limit // 1000 #makes it in seconds
     timer_font = pygame.font.Font("Assets/Ithaca-LVB75.ttf", 100) #loading the font for the timer
@@ -393,12 +389,9 @@ def play_state(spud):
     
     spud_text = timer_font.render(f'Naked Spuds: {spud_count}', True, "white") #rendering the timer
     screen.blit(spud_text, (SCREEN_WIDTH - 525, 18))
-    #pygame.display.flip() #update display NOT NEEDED
 
     #put the hand behind the potato
     Hand_img = pygame.image.load("Assets/Hand_3_Fixed.png").convert_alpha()
-    #print(f"Image width: {Hand_img.get_width()}")
-    #print(f"Image height: {Hand_img.get_height()}")
     scaled_hand = pygame.transform.scale(Hand_img, (600, 600))
     screen.blit(scaled_hand, (SCREEN_WIDTH / 4, 100))
 
@@ -525,11 +518,8 @@ def options_state():
 
     help_button.change_color(mouse_pos)
     help_button.update(screen)
-    #pygame.display.flip()
     Custum_Cursor.update() #update the cursor location
     Custum_Cursor.draw() #draw the cursor
-    # pygame.display.flip() #update display
-
 
 def help_state():
     global mouse_pos
@@ -726,7 +716,6 @@ while running: #while the game is running
         if event.type == pygame.QUIT: #in the event of quit
             running = False #stop the while loop
     
-    #clock.tick(FPS) #if we start changing the speed
     # update the slider in options
     if game_state == "Options":
         pygame_widgets.update(event)

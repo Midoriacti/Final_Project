@@ -6,6 +6,9 @@
  - This program is made with Python and its libraries: pygame and pygame widgets.
 
 **Features**:
+ - **Main Menu**:
+      - Navigation to play and options screens
+      - Quit button to allow players to exit the game
  - **Options Menu**:
       - Fullscreen button that changes the resolution of the window to fullscreen. It can return the window back to the original scaling when pressed again.
       - Help button that takes the player to a description of the game.
