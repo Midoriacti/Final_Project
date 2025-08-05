@@ -27,9 +27,9 @@
 **How to run the game**:
  - Download the files in this repository
  - Open them using Visual Studio Code
- - In VS Code, open terminal, locate the directory you placed it in, and type "python game.py"
+ - In VS Code, open terminal, locate the directory you placed it in, and type "python game.py".
  - A window will open and this will allow the player to play the game.
- - To activate the peeling mechanism, click and drag on the potato using the mouse.here
+ - To activate the peeling mechanism, click and drag on the potato using the mouse.
    
 **File Structure**: 
  - **game.py**: main file to run the game
