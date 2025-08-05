@@ -20,7 +20,7 @@
       - Includes a button that can return the player to the main menu
 
 **Installation**:
- - Python version 3.12.7
+ - Python version 3.13.5
  - Pygame (python -m pip install pygame)
  - Pygame Widgets (python -m pip install pygame-widgets)
    
