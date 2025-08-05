@@ -10,8 +10,8 @@ from peel import Peel #import peel class for animations
 pygame.init() #initialize pygame
 
 # initalize variables
-menu_volume = 1.0 # default volume is max volume (1.0)
-play_volume = 0.5 # default volume is half volume (0.5)
+menu_volume = 0.5 # default volume is max volume (1.0)
+play_volume = 1.0 # default volume is half volume (0.5)
 volume_display = 100 # default display volume is max (100)
 
 #boolean variables to control the game loop
@@ -42,6 +42,7 @@ scaled_button = pygame.transform.scale(raw_button, (400, 150))  #make set width,
 small_scaled_button = pygame.transform.scale(raw_button, (250, 130)) #make smaller set
 
 Main_theme = pygame.mixer.Sound("Assets/Main_theme.mp3") #main music
+Main_theme.set_volume(menu_volume)
 Custum_Cursor = Cursor()
 
 # make the slider using pygame_widgets
